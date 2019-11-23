@@ -2,7 +2,7 @@
   "name": "bundle-size-calculator",
   "version": "0.0.1",
   "description": "Backend to compute bundle size",
-  "main": "index.js",
+  "main": "src/installPackage.js",
   "scripts": {
     "test": "test"
   },
@@ -27,5 +27,8 @@
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   },
-  "dependencies": {}
+  "dependencies": {
+    "mkdir-promise": "^1.0.0",
+    "rimraf": "^3.0.0"
+  }
 }
