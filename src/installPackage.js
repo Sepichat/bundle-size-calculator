@@ -1,31 +1,32 @@
 const rimraf = require('rimraf');
-const path = require('path')
-const mkdir = require('mkdir-promise')
+const path = require('path');
+const mkdir = require('mkdir-promise');
 const { exec } = require('child_process');
 const {workspacePath} = require('./config');
+const Builder = require('./builder');
 
 const InstallPackage = {
     getPath(packageName) {
-        return path.join(workspacePath, packageName)
+        return path.join(workspacePath, packageName);
     },
 
     cleanUpPostBuild(packageName) {
-        const installPath = this.getPath(packageName);
+        const installPath = InstallPackage.getPath(packageName);
         rimraf(installPath, () => {});
         console.log('clean up done;')
     },
 
     async prepareWorkspace(packageName) {
-        const installPath = this.getPath(packageName);
+        const installPath = InstallPackage.getPath(packageName);
         await mkdir(installPath);
         console.log('workspace created');
     },
 
     async installPackage(packageName) {
         await InstallPackage.prepareWorkspace(packageName);
-        installCommand = `npm install ${packageName}`;
+        const installCommand = `npm install ${packageName}`;
         exec(installCommand, {
-                cwd: this.getPath(packageName)
+                cwd: InstallPackage.getPath(packageName)
             },
             (err, stdout, stderr) => {
                 if(err) {
@@ -33,13 +34,14 @@ const InstallPackage = {
                     InstallPackage.cleanUpPostBuild(packageName);
                 } else {
                     console.log('Result command: ', stdout)
+                    Builder.bundlePackage(packageName, InstallPackage.getPath(packageName));
                 }
             }
         );
     },
 }
 
-module.export = InstallPackage;
+module.exports = InstallPackage;
 
 // InstallPackage.installPackage('mukiyodaplop'); // fail
 InstallPackage.installPackage('react'); // OK
